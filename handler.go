@@ -75,21 +75,6 @@ func (h *OverrideHandler) SetLevel(newLevel slog.Leveler) {
 	h.assignedLevel.Store(newLevel)
 }
 
-// Level returns the current level of the handler by evaluating the assigned
-// [slog.Leveler]. If no level override is set, it returns the level from the
-// underlying handler if it implements the Level() method, otherwise returns 0.
-func (h *OverrideHandler) Level() slog.Level {
-	leveler := h.assignedLevel.Load()
-	if leveler == nil {
-		// Fallback to basic handler's level if it has one
-		if l, ok := h.basic.(interface{ Level() slog.Level }); ok {
-			return l.Level()
-		}
-		return 0
-	}
-	return leveler.(slog.Leveler).Level()
-}
-
 // Handle forwards the record to the underlying handler without modification.
 func (h *OverrideHandler) Handle(ctx context.Context, record slog.Record) error {
 	return h.basic.Handle(ctx, record)
