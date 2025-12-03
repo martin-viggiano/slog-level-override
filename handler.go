@@ -19,14 +19,24 @@ func New(h slog.Handler) *OverrideHandler {
 	}
 }
 
-// NewWithLevel creates a new [slog.Logger] with an [OverrideHandler] that
-// overrides the level of the provided handler with the specified [slog.Leveler].
+// NewWithLevel creates a new [OverrideHandler] wrapping the provided handler
+// with the specified [slog.Leveler] already set.
 //
 // The level is evaluated dynamically, allowing for runtime level changes.
-func NewWithLevel(h slog.Handler, level slog.Leveler) *slog.Logger {
+func NewWithLevel(h slog.Handler, level slog.Leveler) *OverrideHandler {
 	dynamicHandler := New(h)
 	dynamicHandler.SetLevel(level)
-	return slog.New(dynamicHandler)
+	return dynamicHandler
+}
+
+// NewLoggerWithLevel wraps an existing [slog.Logger] with an [OverrideHandler]
+// that overrides the level with the specified [slog.Leveler].
+//
+// The level is evaluated dynamically, allowing for runtime level changes.
+// Returns a new [slog.Logger] with the wrapped handler.
+func NewLoggerWithLevel(logger *slog.Logger, level slog.Leveler) *slog.Logger {
+	handler := NewWithLevel(logger.Handler(), level)
+	return slog.New(handler)
 }
 
 // OverrideHandler is an [slog.Handler] that wraps another handler and allows

@@ -31,8 +31,9 @@ func main() {
     // Change the level at runtime
     handler.SetLevel(slog.LevelWarn)
     
-    // Or use the standalone function
-    slogleveloverride.SetLevel(handler, slog.LevelDebug)
+    // Or create with an initial level
+    handler2 := slogleveloverride.NewWithLevel(slog.NewJSONHandler(os.Stdout, nil), slog.LevelInfo)
+    logger2 := slog.New(handler2)
 }
 ```
 
